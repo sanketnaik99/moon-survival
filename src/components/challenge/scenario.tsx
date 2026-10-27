@@ -1,11 +1,4 @@
-import { Input } from '#/components/ui/input'
 import { SCENARIO } from '#/lib/nasa'
-
-interface ScenarioProps {
-  name: string
-  onProfileChange: (profile: { name: string }) => void
-  disabled?: boolean
-}
 
 const STEPS = [
   ['Rank alone', 'About 3 minutes, no talking'],
@@ -13,7 +6,7 @@ const STEPS = [
   ['Compare with NASA', 'See how you and your team scored'],
 ]
 
-export function Scenario({ name, onProfileChange, disabled }: ScenarioProps) {
+export function Scenario() {
   return (
     <section className="space-y-5">
       <div className="space-y-3">
@@ -50,19 +43,6 @@ export function Scenario({ name, onProfileChange, disabled }: ScenarioProps) {
           </li>
         ))}
       </ol>
-
-      <label className="grid gap-1.5 text-sm font-semibold">
-        Your name
-        <Input
-          value={name}
-          disabled={disabled}
-          autoComplete="name"
-          required
-          placeholder="e.g. Alex"
-          className="h-11"
-          onChange={(event) => onProfileChange({ name: event.target.value })}
-        />
-      </label>
     </section>
   )
 }

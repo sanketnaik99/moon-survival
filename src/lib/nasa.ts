@@ -102,6 +102,14 @@ export const ITEMS: SurvivalItem[] = [
 
 export const INITIAL_ORDER: string[] = ITEMS.map((item) => item.id)
 
+export function isValidOrder(value: unknown): value is string[] {
+  return (
+    Array.isArray(value) &&
+    value.length === INITIAL_ORDER.length &&
+    INITIAL_ORDER.every((id) => value.includes(id))
+  )
+}
+
 export const ITEMS_BY_ID: Record<string, SurvivalItem> = Object.fromEntries(
   ITEMS.map((item) => [item.id, item]),
 )

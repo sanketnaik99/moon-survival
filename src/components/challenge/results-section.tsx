@@ -7,18 +7,9 @@ import {
   getBand,
   scoreRanking,
 } from '#/lib/nasa'
-import type { BandTone } from '#/lib/nasa'
+import { TONE_BG } from '#/components/challenge/band-dot'
 import { ItemImage } from '#/components/challenge/item-image'
 import { cn } from '#/lib/utils'
-
-const TONE_BG: Record<BandTone, string> = {
-  excellent: 'bg-band-excellent',
-  good: 'bg-band-good',
-  average: 'bg-band-average',
-  fair: 'bg-band-fair',
-  poor: 'bg-band-poor',
-  'very-poor': 'bg-band-very-poor',
-}
 
 interface ResultsSectionProps {
   myOrder: string[]

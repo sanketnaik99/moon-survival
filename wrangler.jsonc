@@ -1,7 +1,34 @@
 {
-  "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "tanstack-start-app",
-  "compatibility_date": "2025-09-02",
-  "compatibility_flags": ["nodejs_compat"],
-  "main": "@tanstack/react-start/server-entry"
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "moon-survival",
+	"compatibility_date": "2025-09-02",
+	"compatibility_flags": [
+		"nodejs_compat"
+	],
+	"main": "src/server.ts",
+	"d1_databases": [
+		{
+			"binding": "DB",
+			"database_name": "moon-survival",
+			// Replace with the id printed by `npx wrangler d1 create moon-survival`.
+			"database_id": "96094f3f-c5a5-4727-a1cf-4a24664c2c11",
+			"migrations_dir": "migrations",
+		}
+	],
+	"durable_objects": {
+		"bindings": [
+			{
+				"name": "SESSION_ROOM",
+				"class_name": "SessionRoom"
+			}
+		],
+	},
+	"migrations": [
+		{
+			"tag": "v1",
+			"new_sqlite_classes": [
+				"SessionRoom"
+			]
+		}
+	],
 }

@@ -10,53 +10,133 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as IndividualRouteImport } from './routes/individual'
-import { Route as TeamRouteImport } from './routes/team'
+import { Route as AdminAuthedRouteImport } from './routes/admin/_authed'
+import { Route as AdminLoginRouteImport } from './routes/admin/login'
+import { Route as SCodeRouteImport } from './routes/s.$code'
+import { Route as AdminAuthedIndexRouteImport } from './routes/admin/_authed/index'
+import { Route as SCodeIndexRouteImport } from './routes/s.$code.index'
+import { Route as SCodeIndividualRouteImport } from './routes/s.$code.individual'
+import { Route as SCodeTeamRouteImport } from './routes/s.$code.team'
+import { Route as AdminAuthedSessionsSessionIdRouteImport } from './routes/admin/_authed/sessions.$sessionId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndividualRoute = IndividualRouteImport.update({
+const AdminAuthedRoute = AdminAuthedRouteImport.update({
+  id: '/admin/_authed',
+  path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminLoginRoute = AdminLoginRouteImport.update({
+  id: '/admin/login',
+  path: '/admin/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SCodeRoute = SCodeRouteImport.update({
+  id: '/s/$code',
+  path: '/s/$code',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminAuthedIndexRoute = AdminAuthedIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AdminAuthedRoute,
+} as any)
+const SCodeIndexRoute = SCodeIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => SCodeRoute,
+} as any)
+const SCodeIndividualRoute = SCodeIndividualRouteImport.update({
   id: '/individual',
   path: '/individual',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => SCodeRoute,
 } as any)
-const TeamRoute = TeamRouteImport.update({
+const SCodeTeamRoute = SCodeTeamRouteImport.update({
   id: '/team',
   path: '/team',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => SCodeRoute,
 } as any)
+const AdminAuthedSessionsSessionIdRoute =
+  AdminAuthedSessionsSessionIdRouteImport.update({
+    id: '/sessions/$sessionId',
+    path: '/sessions/$sessionId',
+    getParentRoute: () => AdminAuthedRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/individual': typeof IndividualRoute
-  '/team': typeof TeamRoute
+  '/admin': typeof AdminAuthedRouteWithChildren
+  '/admin/login': typeof AdminLoginRoute
+  '/s/$code': typeof SCodeRouteWithChildren
+  '/s/$code/individual': typeof SCodeIndividualRoute
+  '/s/$code/team': typeof SCodeTeamRoute
+  '/admin/': typeof AdminAuthedIndexRoute
+  '/s/$code/': typeof SCodeIndexRoute
+  '/admin/sessions/$sessionId': typeof AdminAuthedSessionsSessionIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/individual': typeof IndividualRoute
-  '/team': typeof TeamRoute
+  '/admin/login': typeof AdminLoginRoute
+  '/s/$code/individual': typeof SCodeIndividualRoute
+  '/s/$code/team': typeof SCodeTeamRoute
+  '/admin': typeof AdminAuthedIndexRoute
+  '/s/$code': typeof SCodeIndexRoute
+  '/admin/sessions/$sessionId': typeof AdminAuthedSessionsSessionIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/individual': typeof IndividualRoute
-  '/team': typeof TeamRoute
+  '/admin/_authed': typeof AdminAuthedRouteWithChildren
+  '/admin/login': typeof AdminLoginRoute
+  '/s/$code': typeof SCodeRouteWithChildren
+  '/s/$code/individual': typeof SCodeIndividualRoute
+  '/s/$code/team': typeof SCodeTeamRoute
+  '/admin/_authed/': typeof AdminAuthedIndexRoute
+  '/s/$code/': typeof SCodeIndexRoute
+  '/admin/_authed/sessions/$sessionId': typeof AdminAuthedSessionsSessionIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/individual' | '/team'
+  fullPaths:
+    | '/'
+    | '/admin'
+    | '/admin/login'
+    | '/s/$code'
+    | '/s/$code/individual'
+    | '/s/$code/team'
+    | '/admin/'
+    | '/s/$code/'
+    | '/admin/sessions/$sessionId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/individual' | '/team'
-  id: '__root__' | '/' | '/individual' | '/team'
+  to:
+    | '/'
+    | '/admin/login'
+    | '/s/$code/individual'
+    | '/s/$code/team'
+    | '/admin'
+    | '/s/$code'
+    | '/admin/sessions/$sessionId'
+  id:
+    | '__root__'
+    | '/'
+    | '/admin/_authed'
+    | '/admin/login'
+    | '/s/$code'
+    | '/s/$code/individual'
+    | '/s/$code/team'
+    | '/admin/_authed/'
+    | '/s/$code/'
+    | '/admin/_authed/sessions/$sessionId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  IndividualRoute: typeof IndividualRoute
-  TeamRoute: typeof TeamRoute
+  AdminAuthedRoute: typeof AdminAuthedRouteWithChildren
+  AdminLoginRoute: typeof AdminLoginRoute
+  SCodeRoute: typeof SCodeRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
@@ -68,27 +148,98 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/individual': {
-      id: '/individual'
-      path: '/individual'
-      fullPath: '/individual'
-      preLoaderRoute: typeof IndividualRouteImport
+    '/admin/_authed': {
+      id: '/admin/_authed'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminAuthedRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/team': {
-      id: '/team'
-      path: '/team'
-      fullPath: '/team'
-      preLoaderRoute: typeof TeamRouteImport
+    '/admin/login': {
+      id: '/admin/login'
+      path: '/admin/login'
+      fullPath: '/admin/login'
+      preLoaderRoute: typeof AdminLoginRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/s/$code': {
+      id: '/s/$code'
+      path: '/s/$code'
+      fullPath: '/s/$code'
+      preLoaderRoute: typeof SCodeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/_authed/': {
+      id: '/admin/_authed/'
+      path: '/'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AdminAuthedIndexRouteImport
+      parentRoute: typeof AdminAuthedRoute
+    }
+    '/s/$code/': {
+      id: '/s/$code/'
+      path: '/'
+      fullPath: '/s/$code/'
+      preLoaderRoute: typeof SCodeIndexRouteImport
+      parentRoute: typeof SCodeRoute
+    }
+    '/s/$code/individual': {
+      id: '/s/$code/individual'
+      path: '/individual'
+      fullPath: '/s/$code/individual'
+      preLoaderRoute: typeof SCodeIndividualRouteImport
+      parentRoute: typeof SCodeRoute
+    }
+    '/s/$code/team': {
+      id: '/s/$code/team'
+      path: '/team'
+      fullPath: '/s/$code/team'
+      preLoaderRoute: typeof SCodeTeamRouteImport
+      parentRoute: typeof SCodeRoute
+    }
+    '/admin/_authed/sessions/$sessionId': {
+      id: '/admin/_authed/sessions/$sessionId'
+      path: '/sessions/$sessionId'
+      fullPath: '/admin/sessions/$sessionId'
+      preLoaderRoute: typeof AdminAuthedSessionsSessionIdRouteImport
+      parentRoute: typeof AdminAuthedRoute
     }
   }
 }
 
+interface AdminAuthedRouteChildren {
+  AdminAuthedIndexRoute: typeof AdminAuthedIndexRoute
+  AdminAuthedSessionsSessionIdRoute: typeof AdminAuthedSessionsSessionIdRoute
+}
+
+const AdminAuthedRouteChildren: AdminAuthedRouteChildren = {
+  AdminAuthedIndexRoute: AdminAuthedIndexRoute,
+  AdminAuthedSessionsSessionIdRoute: AdminAuthedSessionsSessionIdRoute,
+}
+
+const AdminAuthedRouteWithChildren = AdminAuthedRoute._addFileChildren(
+  AdminAuthedRouteChildren,
+)
+
+interface SCodeRouteChildren {
+  SCodeIndividualRoute: typeof SCodeIndividualRoute
+  SCodeTeamRoute: typeof SCodeTeamRoute
+  SCodeIndexRoute: typeof SCodeIndexRoute
+}
+
+const SCodeRouteChildren: SCodeRouteChildren = {
+  SCodeIndividualRoute: SCodeIndividualRoute,
+  SCodeTeamRoute: SCodeTeamRoute,
+  SCodeIndexRoute: SCodeIndexRoute,
+}
+
+const SCodeRouteWithChildren = SCodeRoute._addFileChildren(SCodeRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  IndividualRoute: IndividualRoute,
-  TeamRoute: TeamRoute,
+  AdminAuthedRoute: AdminAuthedRouteWithChildren,
+  AdminLoginRoute: AdminLoginRoute,
+  SCodeRoute: SCodeRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

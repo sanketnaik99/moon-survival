@@ -13,6 +13,9 @@
     "lint": "eslint",
     "format": "prettier --write . && eslint --fix",
     "check": "prettier --check .",
+    "cf-typegen": "wrangler types",
+    "db:migrate": "wrangler d1 migrations apply moon-survival --local",
+    "db:migrate:remote": "wrangler d1 migrations apply moon-survival --remote",
     "deploy": "npm run build && wrangler deploy"
   },
   "dependencies": {

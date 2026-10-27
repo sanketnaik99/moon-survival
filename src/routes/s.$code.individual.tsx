@@ -6,9 +6,9 @@ import { RankingList } from '#/components/challenge/ranking-list'
 import { RoundNav } from '#/components/challenge/round-nav'
 import { Scenario } from '#/components/challenge/scenario'
 import { Button } from '#/components/ui/button'
-import { useChallenge } from '#/hooks/use-challenge'
+import { useSessionChallenge } from '#/hooks/use-session-challenge'
 
-export const Route = createFileRoute('/individual')({
+export const Route = createFileRoute('/s/$code/individual')({
   head: () => ({
     meta: [{ title: 'Individual ranking · Moon Survival' }],
   }),
@@ -16,12 +16,14 @@ export const Route = createFileRoute('/individual')({
 })
 
 function IndividualPage() {
-  const challenge = useChallenge()
-  const { hydrated, myLocked, teamLocked } = challenge
+  const { code } = Route.useParams()
+  const challenge = useSessionChallenge(code)
+  const { hydrated, joined, myLocked, teamLocked } = challenge
 
   return (
     <div className="min-h-dvh pb-28">
       <RoundNav
+        code={code}
         current="individual"
         myLocked={myLocked}
         teamLocked={teamLocked}
@@ -29,13 +31,11 @@ function IndividualPage() {
       <main className="mx-auto w-full max-w-2xl space-y-8 px-4 py-6">
         {!hydrated ? (
           <div className="h-96 animate-pulse rounded-xl bg-muted" />
+        ) : !joined ? (
+          <NotJoined code={code} />
         ) : (
           <>
-            <Scenario
-              name={challenge.name}
-              onProfileChange={challenge.setProfile}
-              disabled={teamLocked}
-            />
+            <Scenario />
 
             {myLocked && (
               <div className="flex items-start gap-3 rounded-xl border border-band-excellent/40 bg-band-excellent/10 p-4">
@@ -43,7 +43,8 @@ function IndividualPage() {
                 <div className="space-y-1 text-sm">
                   <p className="font-bold">Your ranking is saved</p>
                   <p className="text-muted-foreground">
-                    Now discuss with your team and agree on one ranking.
+                    Now discuss with your team ({challenge.teamName}) and agree
+                    on one ranking.
                   </p>
                 </div>
               </div>
@@ -65,25 +66,28 @@ function IndividualPage() {
                 label="Your ranking"
                 disabled={myLocked}
               />
+              {challenge.error && (
+                <p className="text-sm text-destructive">{challenge.error}</p>
+              )}
             </section>
           </>
         )}
       </main>
 
-      {hydrated && (
+      {hydrated && joined && (
         <ActionBar>
           {myLocked ? (
             <>
               <Button
                 variant="outline"
                 className="h-11"
-                disabled={teamLocked}
-                onClick={challenge.unlockMine}
+                disabled={teamLocked || challenge.pending}
+                onClick={() => void challenge.unlockMine()}
               >
                 Edit
               </Button>
               <Button asChild className="h-11 flex-1">
-                <Link to="/team">
+                <Link to="/s/$code/team" params={{ code }}>
                   Go to team round <ArrowRight />
                 </Link>
               </Button>
@@ -91,24 +95,37 @@ function IndividualPage() {
           ) : (
             <ConfirmLockDialog
               title="Lock in your ranking?"
-              description="You can still edit it until the team round is locked."
+              description="You can still edit it until your team locks its ranking."
               confirmLabel="Lock in"
-              onConfirm={challenge.lockMine}
+              onConfirm={() => void challenge.lockMine()}
               trigger={
-                <Button
-                  className="h-11 flex-1"
-                  disabled={!challenge.name.trim()}
-                >
+                <Button className="h-11 flex-1" disabled={challenge.pending}>
                   <Lock />
-                  {challenge.name.trim()
-                    ? 'Lock in ranking'
-                    : 'Enter your name to lock in'}
+                  Lock in ranking
                 </Button>
               }
             />
           )}
         </ActionBar>
       )}
+    </div>
+  )
+}
+
+function NotJoined({ code }: { code: string }) {
+  return (
+    <div className="space-y-3 rounded-xl border bg-card p-5">
+      <h1 className="font-display text-2xl font-bold">
+        Join the session first
+      </h1>
+      <p className="text-sm text-muted-foreground">
+        Enter your name and pick your team to get started.
+      </p>
+      <Button asChild className="h-11">
+        <Link to="/s/$code" params={{ code }}>
+          Join session
+        </Link>
+      </Button>
     </div>
   )
 }

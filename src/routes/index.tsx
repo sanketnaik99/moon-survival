@@ -1,6 +1,8 @@
-import { Link, createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { ArrowRight } from 'lucide-react'
+import { useState } from 'react'
 import { Button } from '#/components/ui/button'
+import { Input } from '#/components/ui/input'
 
 export const Route = createFileRoute('/')({ component: Home })
 
@@ -27,6 +29,8 @@ const STEPS = [
 ]
 
 function Home() {
+  const navigate = useNavigate()
+  const [code, setCode] = useState('')
   return (
     <main className="mx-auto flex min-h-dvh w-full max-w-2xl flex-col gap-8 px-4 py-10 sm:py-16">
       <img
@@ -78,11 +82,42 @@ function Home() {
         </ol>
       </section>
 
-      <Button asChild size="lg" className="h-12 w-full text-base sm:w-fit">
-        <Link to="/individual">
-          Start the challenge <ArrowRight />
-        </Link>
-      </Button>
+      <form
+        className="space-y-2"
+        onSubmit={(event) => {
+          event.preventDefault()
+          const trimmed = code.trim().toUpperCase()
+          if (trimmed)
+            void navigate({ to: '/s/$code', params: { code: trimmed } })
+        }}
+      >
+        <label htmlFor="session-code" className="text-sm font-semibold">
+          Have a session code?
+        </label>
+        <div className="flex gap-2">
+          <Input
+            id="session-code"
+            value={code}
+            onChange={(event) => setCode(event.target.value)}
+            placeholder="e.g. K7M2QX"
+            autoComplete="off"
+            autoCapitalize="characters"
+            maxLength={6}
+            className="h-12 flex-1 font-mono tracking-widest uppercase sm:max-w-48"
+          />
+          <Button
+            type="submit"
+            size="lg"
+            className="h-12"
+            disabled={!code.trim()}
+          >
+            Join <ArrowRight />
+          </Button>
+        </div>
+        <p className="text-sm text-muted-foreground">
+          Your facilitator will share a link or a code.
+        </p>
+      </form>
     </main>
   )
 }
