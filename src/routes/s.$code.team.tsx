@@ -60,7 +60,7 @@ function TeamPage() {
                 <p className="text-sm text-muted-foreground">
                   {teamLocked
                     ? `Locked in${challenge.teamLockedBy ? ` by ${challenge.teamLockedBy}` : ''}.`
-                    : "Discuss and agree on one order. Reach real consensus: don't vote or average. We started from your own order. Whoever locks first submits for the whole team."}
+                    : "Discuss and agree on one order. Reach real consensus: don't vote or average. Everyone starts from the original order. Whoever locks first submits for the whole team."}
                 </p>
               </div>
               <RankingList

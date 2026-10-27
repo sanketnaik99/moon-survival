@@ -78,14 +78,6 @@ function IndividualPage() {
         <ActionBar>
           {myLocked ? (
             <>
-              <Button
-                variant="outline"
-                className="h-11"
-                disabled={teamLocked || challenge.pending}
-                onClick={() => void challenge.unlockMine()}
-              >
-                Edit
-              </Button>
               <Button asChild className="h-11 flex-1">
                 <Link to="/s/$code/team" params={{ code }}>
                   Go to team round <ArrowRight />
@@ -95,7 +87,7 @@ function IndividualPage() {
           ) : (
             <ConfirmLockDialog
               title="Lock in your ranking?"
-              description="You can still edit it until your team locks its ranking."
+              description="This is your own baseline score, so you can't change it afterward."
               confirmLabel="Lock in"
               onConfirm={() => void challenge.lockMine()}
               trigger={

@@ -6,7 +6,6 @@ import {
   getParticipantState,
   lockIndividual,
   lockTeam,
-  unlockIndividual,
 } from '#/server/participant'
 
 interface Drafts {
@@ -122,7 +121,7 @@ export function useSessionChallenge(code: string) {
   const myOrder =
     (myLocked ? state?.myOrder : null) ?? drafts.myOrder ?? INITIAL_ORDER
   const teamOrder =
-    (teamLocked ? state?.teamOrder : null) ?? drafts.teamOrder ?? myOrder
+    (teamLocked ? state?.teamOrder : null) ?? drafts.teamOrder ?? INITIAL_ORDER
 
   return {
     hydrated,
@@ -150,8 +149,6 @@ export function useSessionChallenge(code: string) {
           data: { participantId: participantId!, order: myOrder },
         }),
       ),
-    unlockMine: () =>
-      run(() => unlockIndividual({ data: { participantId: participantId! } })),
     lockTeam: () =>
       run(() =>
         lockTeam({ data: { participantId: participantId!, order: teamOrder } }),

@@ -42,7 +42,7 @@ npm run cf-typegen         # regenerate worker-configuration.d.ts after editing 
 - Add shadcn components with `npx shadcn@latest add <name>`. The generator writes `from "cn"` imports and `.tsx` import extensions, so change them to `#/lib/utils` and drop the extension.
 - Drag-and-drop ranking uses the beui sortable list (`src/components/motion/sortable-list.tsx`, installed via `npx shadcn@latest add @beui/sortable-stack`). **Wrap it, don't edit it.** `lint` reports a few errors in this file and in `ui/button.tsx`, because they're generated code.
 - Irreversible actions ask for confirmation first, through `ConfirmLockDialog` (an `AlertDialog`; a bottom sheet on mobile, centered on desktop, with Keep editing focused by default):
-  - Individual lock-in: a simple confirm.
+  - Individual lock-in: a confirm that says it can't be changed afterward.
   - Team lock-in: also requires the "Everyone agreed (no voting or averaging)" checkbox.
   - There is no "Start over" any more: results are final and stored on the server.
 
@@ -66,8 +66,8 @@ npm run cf-typegen         # regenerate worker-configuration.d.ts after editing 
 - The exercise is only reachable through a session link. Teams are defined by the admin; people pick one when they join.
 - **Scores are computed on the server only** (`lockIndividual` / `lockTeam`). Clients send orders, never scores.
 - The first teammate to lock the team ranking submits for the whole team (atomic `UPDATE ... WHERE locked_at IS NULL`). Teammates' pages switch to the results on their own. A person whose team locked before they did can still lock their own ranking.
-- `/s/$code/team` is guarded until the individual ranking is locked. The individual ranking can be edited until the team ranking is locked.
-- The team ranking starts from the person's own order.
+- `/s/$code/team` is guarded until the individual ranking is locked. **The individual lock is final** (no edit or unlock): it's the pre-discussion baseline, and `lockIndividual` only writes when `my_locked_at IS NULL`.
+- The team ranking starts from the original (handout) order, `INITIAL_ORDER`, not from anyone's individual ranking.
 - NASA's answers, scores and survival messages only appear after the team ranking is locked.
 - **The admin dashboard shows final scores only**: a person appears once they and their team are both locked.
 - Realtime: write to D1, then `notify()` the session's Durable Object. Clients refetch on every event rather than merging partial state.

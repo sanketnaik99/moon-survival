@@ -109,35 +109,19 @@ export const lockIndividual = createServerFn({ method: 'POST' })
 
     // Scores are only ever computed here, never trusted from the client.
     const { total } = scoreRanking(data.order)
-    // Once the team has locked, only a person who hasn't locked yet may still do so.
-    await env.DB.prepare(
+    // Final: only the first lock counts, so a repeat or replayed call changes nothing.
+    const result = await env.DB.prepare(
       `UPDATE participants SET my_order = ?, my_score = ?, my_locked_at = ?
-        WHERE id = ? AND (my_locked_at IS NULL
-          OR team_id NOT IN (SELECT id FROM teams WHERE locked_at IS NOT NULL))`,
+        WHERE id = ? AND my_locked_at IS NULL`,
     )
       .bind(JSON.stringify(data.order), total, Date.now(), person.id)
       .run()
-    await notify(person.session_id, {
-      type: 'individual-locked',
-      teamId: person.team_id,
-    })
-    return loadState(person.id)
-  })
-
-export const unlockIndividual = createServerFn({ method: 'POST' })
-  .validator((data: { participantId: string }) => data)
-  .handler(async ({ data }) => {
-    const person = await requireOpenParticipant(data.participantId)
-    await env.DB.prepare(
-      `UPDATE participants SET my_locked_at = NULL, my_score = NULL
-        WHERE id = ? AND team_id NOT IN (SELECT id FROM teams WHERE locked_at IS NOT NULL)`,
-    )
-      .bind(person.id)
-      .run()
-    await notify(person.session_id, {
-      type: 'individual-locked',
-      teamId: person.team_id,
-    })
+    if (result.meta.changes > 0) {
+      await notify(person.session_id, {
+        type: 'individual-locked',
+        teamId: person.team_id,
+      })
+    }
     return loadState(person.id)
   })
 
