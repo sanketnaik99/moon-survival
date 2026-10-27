@@ -1,6 +1,7 @@
 import { Link, createFileRoute, useRouter } from '@tanstack/react-router'
 import { ArrowLeft, Check, Copy, Plus } from 'lucide-react'
 import { useEffect, useState } from 'react'
+import { ScoreChart } from '#/components/admin/score-chart'
 import { BandDot } from '#/components/challenge/band-dot'
 import { Button } from '#/components/ui/button'
 import { Input } from '#/components/ui/input'
@@ -90,6 +91,8 @@ function SessionDashboard() {
           once a person and their team have both locked in.
         </p>
       )}
+
+      <ScoreChart dashboard={dashboard} />
 
       <section className="grid gap-4 md:grid-cols-2" aria-label="Teams">
         {dashboard.teams.map((team) => (

@@ -32,7 +32,7 @@ npm run cf-typegen         # regenerate worker-configuration.d.ts after editing 
 
 - **Light mode only.** `color-scheme: light`, no `.dark` styles. Use the tokens in `src/styles.css` (`bg-card`, `text-muted-foreground`, `bg-primary`, `bg-band-*`).
 - **Keep the UI subtle.** Warm off-white background, one muted navy accent, flat solid buttons, plain bordered cards. No gradients, no gradient text, no glow shadows, no rainbow accents. An earlier colourful version was rejected as looking "very AI".
-- **Colour is for meaning only.** The score-band dots and the "off by" delta pills (green for exact, then lime, amber, orange and red the further off) are the only colour-coded elements.
+- **Colour is for meaning only.** The score-band dots and the "off by" delta pills (green for exact, then lime, amber, orange and red the further off) are the only colour-coded elements, plus the admin score chart, which uses two fixed tokens, `chart-team` (navy) and `chart-individual` (light steel blue), kept away from the band colours.
 - **Mobile first, and it must work at 320–1280px.** Tap targets ≥ 44px (`h-11`), inputs ≥ 16px font, no horizontal scroll, sticky bottom bars use `env(safe-area-inset-bottom)`, and pages leave `pb-28` for the bar.
 - **Ranking sections are one centered column**, capped at `max-w-lg` (the same width as the confirm dialog). The beui list has its own `max-w-md`, so `RankingList` passes `className="max-w-none"` to override it.
 - **Images, not icon glyphs, for the 15 items.** They're pixel-art illustrations cut from a single AI-generated sprite sheet (3 columns × 5 rows, in handout order) into transparent 256px PNGs at `public/items/<item id>.png`, and rendered by `ItemImage`. To change one, replace the PNG with the same name. The landing page hero is `public/hero.jpg`.
@@ -55,6 +55,7 @@ npm run cf-typegen         # regenerate worker-configuration.d.ts after editing 
 - `migrations/`: D1 schema (`sessions`, `teams`, `participants`).
 - `src/hooks/use-session-challenge.ts`: participant state. Server state is the truth; only unlocked drafts live in `localStorage`. It reads storage after mount, never during SSR, and exposes `hydrated`.
 - `src/hooks/use-session-socket.ts`: WebSocket with backoff reconnect; calls back on every message and after reconnect.
+- `src/components/admin/score-chart.tsx`: the dashboard's horizontal bar chart. Plain HTML/CSS (no chart library). It combines team and individual scores in one list, sorted best (lowest) first, on a fixed 0–112 scale, and only includes locked teams and their finished members.
 - `src/components/challenge/`: `ranking-list`, `item-image`, `scenario`, `results-section`, `round-nav`, `action-bar`, `confirm-lock-dialog`, `band-dot`.
 - Routes:
   - `/`: landing page with the hero image, a "Have a session code?" input and a "How it works" list.

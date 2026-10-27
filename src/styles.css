@@ -34,6 +34,8 @@
   --band-fair: oklch(0.72 0.17 55);
   --band-poor: oklch(0.63 0.2 35);
   --band-very-poor: oklch(0.55 0.22 25);
+  --chart-team: oklch(0.3 0.04 260);
+  --chart-individual: oklch(0.72 0.07 235);
 }
 
 @theme inline {
@@ -64,6 +66,8 @@
   --color-band-fair: var(--band-fair);
   --color-band-poor: var(--band-poor);
   --color-band-very-poor: var(--band-very-poor);
+  --color-chart-team: var(--chart-team);
+  --color-chart-individual: var(--chart-individual);
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
