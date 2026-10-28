@@ -3,7 +3,8 @@ import { Check, Lock, Rocket } from 'lucide-react'
 import { cn } from '#/lib/utils'
 
 interface RoundNavProps {
-  code: string
+  /** Omit for solo play, which links to /play/* instead of a session. */
+  code?: string
   current: 'individual' | 'team'
   myLocked: boolean
   teamLocked: boolean
@@ -24,6 +25,11 @@ export function RoundNav({
         >
           <Rocket className="size-4" aria-hidden="true" />
           <span className="max-[380px]:sr-only">Moon Survival</span>
+          {!code && (
+            <span className="text-xs font-semibold text-muted-foreground">
+              Solo
+            </span>
+          )}
         </Link>
         <nav aria-label="Rounds" className="flex gap-1">
           <RoundLink
@@ -55,31 +61,50 @@ function RoundLink({
   done,
   locked,
 }: {
-  code: string
+  code?: string
   to: '/s/$code/individual' | '/s/$code/team'
   active: boolean
   label: string
   done: boolean
   locked?: boolean
 }) {
-  return (
-    <Link
-      to={to}
-      params={{ code }}
-      aria-current={active ? 'page' : undefined}
-      className={cn(
-        'flex min-h-10 items-center gap-1.5 rounded-full px-3 text-sm font-semibold transition-colors',
-        active
-          ? 'bg-primary text-primary-foreground'
-          : 'text-muted-foreground hover:bg-accent',
-      )}
-    >
+  const className = cn(
+    'flex min-h-10 items-center gap-1.5 rounded-full px-3 text-sm font-semibold transition-colors',
+    active
+      ? 'bg-primary text-primary-foreground'
+      : 'text-muted-foreground hover:bg-accent',
+  )
+  const content = (
+    <>
       {label}
       {done ? (
         <Check className="size-3.5" aria-label="done" />
       ) : locked ? (
         <Lock className="size-3.5" aria-label="locked" />
       ) : null}
+    </>
+  )
+  const current = active ? 'page' : undefined
+
+  if (!code) {
+    return (
+      <Link
+        to={to === '/s/$code/team' ? '/play/team' : '/play/individual'}
+        aria-current={current}
+        className={className}
+      >
+        {content}
+      </Link>
+    )
+  }
+  return (
+    <Link
+      to={to}
+      params={{ code }}
+      aria-current={current}
+      className={className}
+    >
+      {content}
     </Link>
   )
 }

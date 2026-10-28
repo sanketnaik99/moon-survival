@@ -12,6 +12,9 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminAuthedRouteImport } from './routes/admin/_authed'
 import { Route as AdminLoginRouteImport } from './routes/admin/login'
+import { Route as PlayIndexRouteImport } from './routes/play.index'
+import { Route as PlayIndividualRouteImport } from './routes/play.individual'
+import { Route as PlayTeamRouteImport } from './routes/play.team'
 import { Route as SCodeRouteImport } from './routes/s.$code'
 import { Route as AdminAuthedIndexRouteImport } from './routes/admin/_authed/index'
 import { Route as SCodeIndexRouteImport } from './routes/s.$code.index'
@@ -32,6 +35,21 @@ const AdminAuthedRoute = AdminAuthedRouteImport.update({
 const AdminLoginRoute = AdminLoginRouteImport.update({
   id: '/admin/login',
   path: '/admin/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PlayIndexRoute = PlayIndexRouteImport.update({
+  id: '/play/',
+  path: '/play/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PlayIndividualRoute = PlayIndividualRouteImport.update({
+  id: '/play/individual',
+  path: '/play/individual',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PlayTeamRoute = PlayTeamRouteImport.update({
+  id: '/play/team',
+  path: '/play/team',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SCodeRoute = SCodeRouteImport.update({
@@ -70,7 +88,10 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AdminAuthedRouteWithChildren
   '/admin/login': typeof AdminLoginRoute
+  '/play/individual': typeof PlayIndividualRoute
+  '/play/team': typeof PlayTeamRoute
   '/s/$code': typeof SCodeRouteWithChildren
+  '/play/': typeof PlayIndexRoute
   '/s/$code/individual': typeof SCodeIndividualRoute
   '/s/$code/team': typeof SCodeTeamRoute
   '/admin/': typeof AdminAuthedIndexRoute
@@ -80,6 +101,9 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/admin/login': typeof AdminLoginRoute
+  '/play/individual': typeof PlayIndividualRoute
+  '/play/team': typeof PlayTeamRoute
+  '/play': typeof PlayIndexRoute
   '/s/$code/individual': typeof SCodeIndividualRoute
   '/s/$code/team': typeof SCodeTeamRoute
   '/admin': typeof AdminAuthedIndexRoute
@@ -91,7 +115,10 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/admin/_authed': typeof AdminAuthedRouteWithChildren
   '/admin/login': typeof AdminLoginRoute
+  '/play/individual': typeof PlayIndividualRoute
+  '/play/team': typeof PlayTeamRoute
   '/s/$code': typeof SCodeRouteWithChildren
+  '/play/': typeof PlayIndexRoute
   '/s/$code/individual': typeof SCodeIndividualRoute
   '/s/$code/team': typeof SCodeTeamRoute
   '/admin/_authed/': typeof AdminAuthedIndexRoute
@@ -104,7 +131,10 @@ export interface FileRouteTypes {
     | '/'
     | '/admin'
     | '/admin/login'
+    | '/play/individual'
+    | '/play/team'
     | '/s/$code'
+    | '/play/'
     | '/s/$code/individual'
     | '/s/$code/team'
     | '/admin/'
@@ -114,6 +144,9 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/admin/login'
+    | '/play/individual'
+    | '/play/team'
+    | '/play'
     | '/s/$code/individual'
     | '/s/$code/team'
     | '/admin'
@@ -124,7 +157,10 @@ export interface FileRouteTypes {
     | '/'
     | '/admin/_authed'
     | '/admin/login'
+    | '/play/individual'
+    | '/play/team'
     | '/s/$code'
+    | '/play/'
     | '/s/$code/individual'
     | '/s/$code/team'
     | '/admin/_authed/'
@@ -136,7 +172,10 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AdminAuthedRoute: typeof AdminAuthedRouteWithChildren
   AdminLoginRoute: typeof AdminLoginRoute
+  PlayIndividualRoute: typeof PlayIndividualRoute
+  PlayTeamRoute: typeof PlayTeamRoute
   SCodeRoute: typeof SCodeRouteWithChildren
+  PlayIndexRoute: typeof PlayIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -160,6 +199,27 @@ declare module '@tanstack/react-router' {
       path: '/admin/login'
       fullPath: '/admin/login'
       preLoaderRoute: typeof AdminLoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/play/': {
+      id: '/play/'
+      path: '/play'
+      fullPath: '/play/'
+      preLoaderRoute: typeof PlayIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/play/individual': {
+      id: '/play/individual'
+      path: '/play/individual'
+      fullPath: '/play/individual'
+      preLoaderRoute: typeof PlayIndividualRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/play/team': {
+      id: '/play/team'
+      path: '/play/team'
+      fullPath: '/play/team'
+      preLoaderRoute: typeof PlayTeamRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/s/$code': {
@@ -239,17 +299,11 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminAuthedRoute: AdminAuthedRouteWithChildren,
   AdminLoginRoute: AdminLoginRoute,
+  PlayIndividualRoute: PlayIndividualRoute,
+  PlayTeamRoute: PlayTeamRoute,
   SCodeRoute: SCodeRouteWithChildren,
+  PlayIndexRoute: PlayIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { createStart } from '@tanstack/react-start'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-  }
-}

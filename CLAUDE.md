@@ -54,17 +54,19 @@ npm run cf-typegen         # regenerate worker-configuration.d.ts after editing 
 - `src/server/`: `session-room.ts` (the Durable Object), `db.ts` (D1 helpers + `notify`), `auth.ts` / `guard.ts` / `auth-core.ts` (admin password + cookie), `admin.ts` and `participant.ts` (server functions).
 - `migrations/`: D1 schema (`sessions`, `teams`, `participants`).
 - `src/hooks/use-session-challenge.ts`: participant state. Server state is the truth; only unlocked drafts live in `localStorage`. It reads storage after mount, never during SSR, and exposes `hydrated`.
+- `src/hooks/use-offline-challenge.ts`: solo-mode state in `localStorage`. Returns the same `ChallengeView` (`src/lib/challenge-types.ts`) as `useSessionChallenge`, so `individual-round.tsx` and `team-round.tsx` serve both modes (no `code` prop = solo).
 - `src/hooks/use-session-socket.ts`: WebSocket with backoff reconnect; calls back on every message and after reconnect.
 - `src/components/admin/score-chart.tsx`: the dashboard's horizontal bar chart. Plain HTML/CSS (no chart library). It combines team and individual scores in one list, sorted best (lowest) first, on a fixed 0–112 scale, and only includes locked teams and their finished members.
 - `src/components/challenge/`: `ranking-list`, `item-image`, `scenario`, `results-section`, `round-nav`, `action-bar`, `confirm-lock-dialog`, `band-dot`.
 - Routes:
   - `/`: landing page with the hero image, a "Have a session code?" input and a "How it works" list.
   - `/s/$code`: join page (name + team picker). `/s/$code/individual` and `/s/$code/team` are the two rounds.
+  - `/play/individual`, `/play/team`: solo mode (`/play` redirects to the first).
   - `/admin/login`, `/admin` (create a session + history list), `/admin/sessions/$sessionId` (live dashboard). Everything under `/admin/_authed` requires the admin cookie.
 
 ## Flow rules
 
-- The exercise is only reachable through a session link. Teams are defined by the admin; people pick one when they join.
+- The exercise is reachable through a session link (teams are defined by the admin; people pick one when they join), or in **solo mode** at `/play/individual` and `/play/team`. Solo mode is linked from the landing page ("Try it on your own"), keeps everything in `localStorage` (`useOfflineChallenge`), scores on the client, never touches D1 or the admin dashboard, and is the only place "Play again" (reset) exists. Session rules below don't apply to it.
 - **Scores are computed on the server only** (`lockIndividual` / `lockTeam`). Clients send orders, never scores.
 - The first teammate to lock the team ranking submits for the whole team (atomic `UPDATE ... WHERE locked_at IS NULL`). Teammates' pages switch to the results on their own. A person whose team locked before they did can still lock their own ranking.
 - `/s/$code/team` is guarded until the individual ranking is locked. **The individual lock is final** (no edit or unlock): it's the pre-discussion baseline, and `lockIndividual` only writes when `my_locked_at IS NULL`.

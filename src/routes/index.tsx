@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate } from '@tanstack/react-router'
+import { Link, createFileRoute, useNavigate } from '@tanstack/react-router'
 import { ArrowRight } from 'lucide-react'
 import { useState } from 'react'
 import { Button } from '#/components/ui/button'
@@ -37,7 +37,7 @@ function Home() {
         src="/hero.jpg"
         alt="A crash-landed rocket on the moon with a stranded astronaut saying, Mission Control, we have a wee problem!"
         width={1600}
-        height={849}
+        height={845}
         fetchPriority="high"
         className="h-auto w-full rounded-2xl border"
       />
@@ -118,6 +118,15 @@ function Home() {
           Your facilitator will share a link or a code.
         </p>
       </form>
+
+      <div className="space-y-2 border-t pt-6">
+        <Button asChild variant="outline" size="lg" className="h-11">
+          <Link to="/play/individual">Try it on your own</Link>
+        </Button>
+        <p className="text-sm text-muted-foreground">
+          No facilitator needed. Your answers stay on this device.
+        </p>
+      </div>
     </main>
   )
 }
