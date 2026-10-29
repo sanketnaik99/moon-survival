@@ -1,216 +1,80 @@
-Welcome to your new TanStack Start app!
+<p align="center">
+  <img src="public/hero.jpg" alt="Moon Survival" width="720" />
+</p>
 
-# Getting Started
+# Moon Survival
 
-To run this application:
+A team-building web app based on the NASA Moon Survival exercise. You've crash-landed on the moon and must reach the mother ship 200 miles away. Rank 15 salvaged items from most to least important for survival, first alone, then as a team, and compare both rankings with NASA's expert answers. Lower scores are better.
+
+## How it works
+
+1. A facilitator logs in to the password-protected admin dashboard, creates a **session** with its teams, and shares the link.
+2. Each person joins the session, picks a team, and ranks the 15 items on their own. This individual ranking is locked in and final.
+3. The team discusses and agrees on one ranking. The first teammate to lock it submits for the whole team.
+4. Both rankings are scored against NASA's ranking, and the reasoning behind each item is revealed.
+5. The admin dashboard updates live with final scores, and past sessions are kept as history.
+
+You can also play alone with no session at `/play/individual` ("Try it on your own" on the landing page). Solo mode keeps everything in `localStorage` and never touches the server.
+
+### Scoring
+
+Each item's score is the absolute difference between your rank and NASA's rank, summed across all 15 items. The maximum is 112.
+
+| Score  | Band                                           |
+| ------ | ---------------------------------------------- |
+| 0–25   | Excellent                                      |
+| 26–32  | Good                                           |
+| 33–45  | Average                                        |
+| 46–55  | Fair                                           |
+| 56–70  | Poor (Earth-bound logic)                       |
+| 71–112 | Very poor (casualties of the space program)    |
+
+Scores are computed on the server only; clients send orders, never scores.
+
+## Tech stack
+
+- [TanStack Start](https://tanstack.com/start) + TanStack Router, React 19
+- Tailwind CSS v4, shadcn/ui, `motion`
+- Cloudflare Workers, with **D1** as the source of truth and one **Durable Object** per session for WebSocket live updates
+
+## Getting started
 
 ```bash
 npm install
-npm run dev
+cp .dev.vars.example .dev.vars   # set ADMIN_PASSWORD
+npm run db:migrate               # apply migrations to the local D1
+npm run dev                      # http://localhost:3000
 ```
 
-# Building For Production
+The admin dashboard is at `/admin/login`.
 
-To build this application for production:
+## Scripts
+
+| Command                     | Description                                      |
+| --------------------------- | ------------------------------------------------ |
+| `npm run dev`               | Start the dev server                             |
+| `npm run build`             | Production build                                 |
+| `npm run lint`              | ESLint                                           |
+| `npm run check`             | Prettier check                                   |
+| `npm run db:migrate`        | Apply `migrations/` to the local D1              |
+| `npm run db:migrate:remote` | Apply `migrations/` to the production D1         |
+| `npm run cf-typegen`        | Regenerate `worker-configuration.d.ts`           |
+| `npm run deploy`            | Build and deploy with wrangler                   |
+
+## Deploying
 
 ```bash
-npm run build
+npx wrangler d1 create moon-survival     # paste the database_id into wrangler.jsonc
+npm run db:migrate:remote
+npx wrangler secret put ADMIN_PASSWORD
+npm run deploy
 ```
 
-## Styling
+## Project layout
 
-This project uses [Tailwind CSS](https://tailwindcss.com/) for styling.
-
-### Removing Tailwind CSS
-
-If you prefer not to use Tailwind CSS:
-
-1. Remove the demo pages in `src/routes/demo/`
-2. Replace the Tailwind import in `src/styles.css` with your own styles
-3. Remove `tailwindcss()` from the plugins array in `vite.config.ts`
-4. Remove `@tailwindcss/vite` and `tailwindcss` from `package.json`
-
-## Linting & Formatting
-
-
-This project uses [eslint](https://eslint.org/) and [prettier](https://prettier.io/) for linting and formatting. Eslint is configured using [tanstack/eslint-config](https://tanstack.com/config/latest/docs/eslint). The following scripts are available:
-
-```bash
-npm run lint
-npm run format
-npm run check
-```
-
-
-## Deploy to Cloudflare Workers
-
-This project uses the Cloudflare Vite plugin (configured in `vite.config.ts`) and `wrangler.jsonc`:
-
-1. Install Wrangler: `npm install -g wrangler`
-2. Authenticate: `wrangler login`
-3. Deploy: `npx wrangler deploy`
-
-For production env vars, run `wrangler secret put MY_VAR` for each secret listed in `.env.example`. Public (non-secret) vars go in `wrangler.jsonc` under `vars`.
-
-KV, D1, R2, and Durable Object bindings are configured in `wrangler.jsonc` — see https://developers.cloudflare.com/workers/wrangler/configuration/.
-
-
-## Shadcn
-
-Add components using the latest version of [Shadcn](https://ui.shadcn.com/).
-
-```bash
-pnpm dlx shadcn@latest add button
-```
-
-
-
-## Routing
-
-This project uses [TanStack Router](https://tanstack.com/router) with file-based routing. Routes are managed as files in `src/routes`.
-
-### Adding A Route
-
-To add a new route to your application just add a new file in the `./src/routes` directory.
-
-TanStack will automatically generate the content of the route file for you.
-
-Now that you have two routes you can use a `Link` component to navigate between them.
-
-### Adding Links
-
-To use SPA (Single Page Application) navigation you will need to import the `Link` component from `@tanstack/react-router`.
-
-```tsx
-import { Link } from "@tanstack/react-router";
-```
-
-Then anywhere in your JSX you can use it like so:
-
-```tsx
-<Link to="/about">About</Link>
-```
-
-This will create a link that will navigate to the `/about` route.
-
-More information on the `Link` component can be found in the [Link documentation](https://tanstack.com/router/v1/docs/framework/react/api/router/linkComponent).
-
-### Using A Layout
-
-In the File Based Routing setup the layout is located in `src/routes/__root.tsx`. Anything you add to the root route will appear in all the routes. The route content will appear in the JSX where you render `{children}` in the `shellComponent`.
-
-Here is an example layout that includes a header:
-
-```tsx
-import { HeadContent, Scripts, createRootRoute } from '@tanstack/react-router'
-
-export const Route = createRootRoute({
-  head: () => ({
-    meta: [
-      { charSet: 'utf-8' },
-      { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-      { title: 'My App' },
-    ],
-  }),
-  shellComponent: ({ children }) => (
-    <html lang="en">
-      <head>
-        <HeadContent />
-      </head>
-      <body>
-        <header>
-          <nav>
-            <Link to="/">Home</Link>
-            <Link to="/about">About</Link>
-          </nav>
-        </header>
-        {children}
-        <Scripts />
-      </body>
-    </html>
-  ),
-})
-```
-
-More information on layouts can be found in the [Layouts documentation](https://tanstack.com/router/latest/docs/framework/react/guide/routing-concepts#layouts).
-
-## Server Functions
-
-TanStack Start provides server functions that allow you to write server-side code that seamlessly integrates with your client components.
-
-```tsx
-import { createServerFn } from '@tanstack/react-start'
-
-const getServerTime = createServerFn({
-  method: 'GET',
-}).handler(async () => {
-  return new Date().toISOString()
-})
-
-// Use in a component
-function MyComponent() {
-  const [time, setTime] = useState('')
-  
-  useEffect(() => {
-    getServerTime().then(setTime)
-  }, [])
-  
-  return <div>Server time: {time}</div>
-}
-```
-
-## API Routes
-
-You can create API routes by using the `server` property in your route definitions:
-
-```tsx
-import { createFileRoute } from '@tanstack/react-router'
-import { json } from '@tanstack/react-start'
-
-export const Route = createFileRoute('/api/hello')({
-  server: {
-    handlers: {
-      GET: () => json({ message: 'Hello, World!' }),
-    },
-  },
-})
-```
-
-## Data Fetching
-
-There are multiple ways to fetch data in your application. You can use TanStack Query to fetch data from a server. But you can also use the `loader` functionality built into TanStack Router to load the data for a route before it's rendered.
-
-For example:
-
-```tsx
-import { createFileRoute } from '@tanstack/react-router'
-
-export const Route = createFileRoute('/people')({
-  loader: async () => {
-    const response = await fetch('https://swapi.dev/api/people')
-    return response.json()
-  },
-  component: PeopleComponent,
-})
-
-function PeopleComponent() {
-  const data = Route.useLoaderData()
-  return (
-    <ul>
-      {data.results.map((person) => (
-        <li key={person.name}>{person.name}</li>
-      ))}
-    </ul>
-  )
-}
-```
-
-Loaders simplify your data fetching logic dramatically. Check out more information in the [Loader documentation](https://tanstack.com/router/latest/docs/framework/react/guide/data-loading#loader-parameters).
-
-
-
-# Learn More
-
-You can learn more about all of the offerings from TanStack in the [TanStack documentation](https://tanstack.com).
-
-For TanStack Start specific documentation, visit [TanStack Start](https://tanstack.com/start).
+- `src/lib/nasa.ts`: the 15 items, NASA's ranks and reasoning, scoring and score bands
+- `src/routes/`: file-based routes (landing, join, rounds, solo mode, admin)
+- `src/server/`: Durable Object, D1 helpers, admin auth and server functions
+- `src/components/challenge/`: ranking list, results and round UI
+- `src/components/admin/`: live dashboard and score chart
+- `migrations/`: D1 schema
